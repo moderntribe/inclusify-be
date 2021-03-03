@@ -1,4 +1,4 @@
-from degenderify import degenderify
+from degenderify import degenderify, degenderify_debug
 
 
 def parse_param(request, key):
@@ -23,8 +23,14 @@ def degenderify_request(request):
     text = parse_param(request, "text")
 
     pron = parse_param(request, "pron") or None
+    poss = parse_param(request, "poss") or None
+
+    debug = parse_param(request, "debug") or None
 
     if not text:
         return f'No text found'
 
-    return degenderify(text, pron)
+    if debug:
+        return degenderify_debug(text, pron, poss)
+
+    return degenderify(text, pron, poss)
