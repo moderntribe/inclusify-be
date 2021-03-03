@@ -1,7 +1,7 @@
 import en_core_web_sm
 nlp = en_core_web_sm.load()
 
-DEFAULT_PRON = "candidate"
+DEFAULT_PRON = "degenderify"
 DEFAULT_PRONPOSS = "their"
 DEFAULT_WORDS = {
     "PRON": lambda t: DEFAULT_PRON,

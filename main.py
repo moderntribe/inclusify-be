@@ -14,6 +14,7 @@ def degenderify_request(request):
         `make_response <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>`.
     """
     request_json = request.get_json()
+    text = ''
     if request.args and TEXT_KEY in request.args:
         text = request.args.get(TEXT_KEY)
     elif request_json and TEXT_KEY in request_json:
