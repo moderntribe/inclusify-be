@@ -1,7 +1,14 @@
 from degenderify import degenderify
 
 
-TEXT_KEY = "text"
+def parse_param(request, key):
+    request_json = request.get_json()
+    value = ''
+    if request.args and key in request.args:
+        value = request.args.get(key)
+    elif request_json and key in request_json:
+        value = request_json[key]
+    return value
 
 
 def degenderify_request(request):
@@ -13,14 +20,11 @@ def degenderify_request(request):
         Response object using
         `make_response <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>`.
     """
-    request_json = request.get_json()
-    text = ''
-    if request.args and TEXT_KEY in request.args:
-        text = request.args.get(TEXT_KEY)
-    elif request_json and TEXT_KEY in request_json:
-        text = request_json[TEXT_KEY]
+    text = parse_param(request, "text")
+
+    pron = parse_param(request, "pron") or None
 
     if not text:
         return f'No text found'
 
-    return degenderify(text)
+    return degenderify(text, pron)
