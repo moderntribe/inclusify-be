@@ -38,6 +38,19 @@ def old_degenderify_request(request):
 
 
 def degenderify_request(request):
+    # Set CORS headers for the preflight request
+    if request.method == 'OPTIONS':
+        # Allows GET requests from any origin with the Content-Type
+        # header and caches preflight response for an 3600s
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Max-Age': '3600'
+        }
+
+        return ('', 204, headers)
+
     text = parse_param(request, "text")
 
     options = parse_param(request, "options") or []
@@ -48,9 +61,11 @@ def degenderify_request(request):
     debug = parse_param(request, "debug") or None
 
     if not text:
-        return f'No text found'
+        res_text = f'No text found'
 
     if debug:
-        return inclusify_debug(text, options, pron, poss, person)
+        res_text = inclusify_debug(text, options, pron, poss, person)
 
-    return inclusify(text, options, pron, poss, person)
+    res_text = inclusify(text, options, pron, poss, person)
+
+    return (res_text, 200, {'Access-Control-Allow-Origin': '*'})
