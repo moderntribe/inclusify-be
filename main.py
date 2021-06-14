@@ -1,4 +1,5 @@
 from degenderify import degenderify, degenderify_debug
+from inclusify import inclusify, inclusify_debug
 
 
 def parse_param(request, key):
@@ -11,7 +12,7 @@ def parse_param(request, key):
     return value
 
 
-def degenderify_request(request):
+def old_degenderify_request(request):
     """Responds to any HTTP request.
     Args:
         request (flask.Request): HTTP request object.
@@ -34,3 +35,22 @@ def degenderify_request(request):
         return degenderify_debug(text, pron, poss)
 
     return degenderify(text, pron, poss)
+
+
+def degenderify_request(request):
+    text = parse_param(request, "text")
+
+    options = parse_param(request, "options") or []
+    pron = parse_param(request, "pron") or None
+    poss = parse_param(request, "poss") or None
+    person = parse_param(request, "person") or None
+
+    debug = parse_param(request, "debug") or None
+
+    if not text:
+        return f'No text found'
+
+    if debug:
+        return inclusify_debug(text, options, pron, poss, person)
+
+    return inclusify(text, options, pron, poss, person)
