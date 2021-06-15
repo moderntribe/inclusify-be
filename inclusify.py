@@ -46,7 +46,7 @@ class Placeholders:
 
 
 def generate_html_tag(tag, original):
-  return f'<span class="{CSS_TAGS[tag]}" data-type={TYPE_TAGS[tag]} data-original="{html.escape(original)}">{REPLACE_TAGS[tag]}</span>'
+  return f'<span class="{CSS_TAGS[tag]}" data-type={TYPE_TAGS[tag]} data-original="{html.escape(original)}" title="{html.escape(original)}">{REPLACE_TAGS[tag]}</span>'
 
 
 def replace_ner(p, text, ner_label='PERSON', tag=TAGS['PERSON']):
