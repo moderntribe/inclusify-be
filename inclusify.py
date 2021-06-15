@@ -104,9 +104,9 @@ def inclusify(text, options, replace={}):
 
     options = options or ['name', 'gender', 'address']
     global REPLACE_TAGS
-    REPLACE_TAGS[TAGS['PERSON']] = replace.get('pron', DEFAULT_PRON)
-    REPLACE_TAGS[TAGS['PRON']] = replace.get('poss', DEFAULT_POSS)
-    REPLACE_TAGS[TAGS['POSS']] = replace.get('person', DEFAULT_PERSON)
+    REPLACE_TAGS[TAGS['PERSON']] = replace.get('pron', DEFAULT_PERSON)
+    REPLACE_TAGS[TAGS['PRON']] = replace.get('poss', DEFAULT_PRON)
+    REPLACE_TAGS[TAGS['POSS']] = replace.get('person', DEFAULT_POSS)
     REPLACE_TAGS[TAGS['LOCATION']] = replace.get('location', DEFAULT_LOCATION)
     REPLACE_TAGS[TAGS['GPE']] = replace.get('gpe', DEFAULT_GPE)
 
@@ -118,11 +118,12 @@ def inclusify(text, options, replace={}):
     # Replace names
     if 'name' in options:
         clean_text, names_list = replace_ner(p, clean_text)
-    
+
     # Replace locations and gpe
     if 'location' in options:
         clean_text, names_list = replace_ner(p, clean_text, 'GPE', TAGS['GPE'])
-        clean_text, names_list = replace_ner(p, clean_text, 'LOCATION', TAGS['LOCATION'])
+        clean_text, names_list = replace_ner(
+            p, clean_text, 'LOCATION', TAGS['LOCATION'])
 
     # Replace gender
     if 'gender' in options:
@@ -130,6 +131,8 @@ def inclusify(text, options, replace={}):
         clean_text = replace_poss(p, clean_text)
 
     # print(names_list)
+    print(clean_text)
+    print(p.values)
     return clean_text.replace("HH_", "{").replace("_HH", "}").format(**p.values)
 
 
