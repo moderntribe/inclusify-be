@@ -13,24 +13,32 @@ TAGS = {
     'PERSON': 'PERSON',
     'PRON': 'PRON_GENDER',
     'POSS': 'PRON_POSS',
+    'LOCATION': 'LOCATION',
+    'GPE': 'GPE',
 }
 
 REPLACE_TAGS = {
     'PERSON': DEFAULT_PERSON,
     'PRON_GENDER': DEFAULT_PRON,
-    'PRON_POSS': DEFAULT_POSS
+    'PRON_POSS': DEFAULT_POSS,
+    'LOCATION': DEFAULT_LOCATION,
+    'GPE': DEFAULT_GPE,
 }
 
 CSS_TAGS = {
-    'PERSON': 'tag-person bg-green-100 text-green-700',
-    'PRON_GENDER': 'tag-pron_gender bg-purple-100 text-purple-700',
-    'PRON_POSS': 'tag-pron_poss bg-indigo-100 text-indigo-700'
+    'PERSON': 'bg-green-100 text-green-700',
+    'PRON_GENDER': 'bg-purple-100 text-purple-700',
+    'PRON_POSS': 'bg-indigo-100 text-indigo-700',
+    'LOCATION': 'bg-red-100 text-red-700',
+    'GPE': 'bg-red-100 text-red-700',
 }
 
 TYPE_TAGS = {
     'PERSON': 'tag-person',
     'PRON_GENDER': 'tag-pron_gender',
-    'PRON_POSS': 'tag-pron_poss'
+    'PRON_POSS': 'tag-pron_poss',
+    'LOCATION': 'tag-location',
+    'GPE': 'tag-gpe',
 }
 
 
@@ -92,38 +100,38 @@ def replace_poss(p, text, target_list=['his', 'her'], tag=TAGS['POSS']):
     return replace_gneric(p, text, target_list, tag)
 
 
-def inclusify(text, options, pron, poss, person):
+def inclusify(text, options, replace={}):
 
-    options = options or ['name', 'gender']
-    pron = pron or DEFAULT_PRON
-    poss = poss or DEFAULT_POSS
-    person = person or DEFAULT_PERSON
+    options = options or ['name', 'gender', 'address']
     global REPLACE_TAGS
-    REPLACE_TAGS[TAGS['PERSON']] = person
-    REPLACE_TAGS[TAGS['PRON']] = pron
-    REPLACE_TAGS[TAGS['POSS']] = poss
+    REPLACE_TAGS[TAGS['PERSON']] = replace.get('pron', DEFAULT_PRON)
+    REPLACE_TAGS[TAGS['PRON']] = replace.get('poss', DEFAULT_POSS)
+    REPLACE_TAGS[TAGS['POSS']] = replace.get('person', DEFAULT_PERSON)
+    REPLACE_TAGS[TAGS['LOCATION']] = replace.get('location', DEFAULT_LOCATION)
+    REPLACE_TAGS[TAGS['GPE']] = replace.get('gpe', DEFAULT_GPE)
 
-    print('REPLACE_TAGS', REPLACE_TAGS)
+    # print('REPLACE_TAGS', REPLACE_TAGS)
 
     p = Placeholders()
     clean_text = html.escape(text)
 
-    print('2received text', text)
-    print('2received options', options)
-
     # Replace names
     if 'name' in options:
         clean_text, names_list = replace_ner(p, clean_text)
+    
+    # Replace locations and gpe
+    if 'location' in options:
+        clean_text, names_list = replace_ner(p, clean_text, 'GPE', TAGS['GPE'])
+        clean_text, names_list = replace_ner(p, clean_text, 'LOCATION', TAGS['LOCATION'])
 
     # Replace gender
     if 'gender' in options:
         clean_text = replace_pron(p, clean_text)
-    if 'gender' in options:
         clean_text = replace_poss(p, clean_text)
 
     # print(names_list)
     return clean_text.replace("HH_", "{").replace("_HH", "}").format(**p.values)
 
 
-def inclusify_debug(text, options, pron, poss, person):
-    return inclusify(text, options, pron, poss, person)
+def inclusify_debug(text, options, replace={}):
+    return inclusify(text, options, replace)
