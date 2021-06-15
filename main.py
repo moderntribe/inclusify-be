@@ -51,14 +51,22 @@ def degenderify_request(request):
 
         return ('', 204, headers)
 
-    text = parse_param(request, "text")
-
-    options = parse_param(request, "options") or []
-    pron = parse_param(request, "pron") or None
-    poss = parse_param(request, "poss") or None
-    person = parse_param(request, "person") or None
-
-    debug = parse_param(request, "debug") or None
+    post_dict = request.get_json()
+    if post_dict is not None:
+        params = post_dict["params"]
+        text = params.get("text", "")
+        options = params.get("options", [])
+        pron = params.get("pron", None)
+        poss = params.get("poss", None)
+        person = params.get("person", None)
+        debug = params.get("debug", None)
+    else:
+        text = parse_param(request, "text")
+        options = parse_param(request, "options") or []
+        pron = parse_param(request, "pron") or None
+        poss = parse_param(request, "poss") or None
+        person = parse_param(request, "person") or None
+        debug = parse_param(request, "debug") or None
 
     if not text:
         res_text = f'No text found'
